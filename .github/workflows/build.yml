@@ -1,0 +1,4 @@
+CMakeLists.txt
+cmake/ScreenCapture.def
+src/ScreenCapture.cpp
+include/ScreenCapture.h
