@@ -1,4 +1,39 @@
-CMakeLists.txt
-cmake/ScreenCapture.def
-src/ScreenCapture.cpp
-include/ScreenCapture.h
+name: Build ScreenCapture DLL
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout plugin source
+        uses: actions/checkout@v4
+
+      - name: Checkout FFGL SDK
+        uses: actions/checkout@v4
+        with:
+          repository: resolume/ffgl
+          path: ffgl
+
+      - name: Set up MSVC
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Configure CMake
+        run: |
+          cmake -B build `
+                -A x64 `
+                -DFFGL_ROOT="${{ github.workspace }}/ffgl"
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload DLL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScreenCapture-dll
+          path: build/Release/ScreenCapture.dll
+          if-no-files-found: error
